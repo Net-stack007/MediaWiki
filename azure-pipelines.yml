@@ -1,0 +1,32 @@
+trigger:
+- master
+
+pool:
+  vmImage: VSTS-agent
+
+steps:
+- task: InstallSSHKey@0
+  inputs:
+    knownHostsEntry: '111'
+    sshPublicKey: '111'
+    sshPassphrase: '123'
+    sshKeySecureFile: '23sdfsdfd'
+
+- task: Bash@3
+  displayName: 'Terraform init'
+  inputs:
+    filePath: 'Infra-provission/init.sh'
+
+- task: Bash@3
+  displayName: 'Terraform apply'
+  inputs:
+    filePath: 'Infra-provission/apply.sh'
+
+- task: Ansible@0
+  displayName: 'Run Playbook'
+  inputs:
+    ansibleInterface: 'agentMachine'
+    playbookPathOnAgentMachine: 'miki.yaml'
+    inventoriesAgentMachine: 'file'
+    inventoryFileOnAgentMachine: 'Infra-provission/Azure/inventory'
+    args: '-u azureuser -ssh-extra-args= ''-o StaticHostKeyChecking=no'''
